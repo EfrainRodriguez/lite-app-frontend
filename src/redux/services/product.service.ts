@@ -16,6 +16,7 @@ const api = createApi({
       transformResponse: (response: any[]) => {
         return response.map((product) => ({
           ...product,
+          categories: product.categories[0],
           createdAt: product.createdAt
         }));
       }
@@ -31,15 +32,29 @@ const api = createApi({
       query: (body) => ({
         url: '/products/',
         method: 'POST',
-        body
+        body: {
+          code: body.code,
+          name: body.name,
+          characteristics: body.characteristics,
+          price: body.price,
+          company: body.company.id,
+          categories: [body.categories.id]
+        }
       }),
       invalidatesTags: ['Product']
     }),
     updateProduct: builder.mutation({
       query: (body) => ({
-        url: '/products/',
+        url: `/products/${body.id}/`,
         method: 'PUT',
-        body
+        body: {
+          code: body.code,
+          name: body.name,
+          characteristics: body.characteristics,
+          price: body.price,
+          company: body.company.id,
+          categories: [body.categories.id]
+        }
       }),
       invalidatesTags: ['Product']
     }),

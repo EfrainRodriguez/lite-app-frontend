@@ -18,6 +18,7 @@ import authSlice from './slices/auth.slice';
 import authService from './services/auth.service';
 import productService from './services/product.service';
 import companyService from './services/company.service';
+import categoryService from './services/category.service';
 
 const persistAuthConfig = {
   key: 'auth',
@@ -36,7 +37,8 @@ const rootReducer = combineReducers({
   auth: persistReducer(persistAuthConfig, authSlice),
   [authService.reducerPath]: authService.reducer,
   [productService.reducerPath]: productService.reducer,
-  [companyService.reducerPath]: companyService.reducer
+  [companyService.reducerPath]: companyService.reducer,
+  [categoryService.reducerPath]: categoryService.reducer
 });
 
 const store = configureStore({
@@ -48,6 +50,7 @@ const store = configureStore({
       .concat(authService.middleware)
       .concat(productService.middleware)
       .concat(companyService.middleware)
+      .concat(categoryService.middleware)
 });
 
 // types

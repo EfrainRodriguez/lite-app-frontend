@@ -6,13 +6,19 @@ import { Delete, Edit } from '@mui/icons-material';
 import Modal from '@/components/Modal';
 import PageHeader from '@/components/PageHeader';
 import Table from '@/components/Table';
-import { Product as ProductModel } from '@/models/product.model';
+import { Category, Product as ProductModel } from '@/models/product.model';
 import {
   useGetProductsQuery,
-  useDeleteProductMutation
+  useDeleteProductMutation,
+  useCreateProductMutation,
+  useUpdateProductMutation
 } from '@/redux/services/product.service';
+import { useGetCompaniesQuery } from '@/redux/services/company.service';
+import { useGetCategoriesQuery } from '@/redux/services/category.service';
 
 import ProductMobileContent from './components/ProductMobileContent';
+import ProductForm from './components/ProductForm';
+import { ProductFormDto } from './components/ProductForm/dtos/productFormDto';
 
 const motionProps = {
   initial: { opacity: 0 },
@@ -29,6 +35,12 @@ const Product = () => {
 
   const { data, isLoading } = useGetProductsQuery('');
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+  const [createProduct, { isLoading: isCreateLoading }] =
+    useCreateProductMutation();
+  const [updateProduct, { isLoading: isUpdateLoading }] =
+    useUpdateProductMutation();
+  const { data: companies } = useGetCompaniesQuery('');
+  const { data: categories } = useGetCategoriesQuery('');
 
   const cellSchema = [
     {
@@ -68,7 +80,14 @@ const Product = () => {
           <Tooltip title="Edit" arrow>
             <IconButton
               aria-label="edit"
-              onClick={() => {}}
+              onClick={() => {
+                setSelectedProduct({
+                  ...item,
+                  company: companies?.find((c) => c.id === item.company),
+                  categories: categories?.find((c) => c.id === item.categories)
+                });
+                setShowCreateModal(true);
+              }}
               size="large"
               sx={{ mr: 1 }}
             >
@@ -93,14 +112,30 @@ const Product = () => {
     }
   ];
 
-  const handleShowCreate = () => {};
-
   const handleDeleteProduct = () => {
     if (selectedProduct) {
       deleteProduct(selectedProduct.id)
         .unwrap()
         .then(() => {
           setShowDeleteModal(false);
+        });
+    }
+  };
+
+  const handleCreateProduct = (data: ProductFormDto) => {
+    createProduct(data)
+      .unwrap()
+      .then(() => {
+        setShowCreateModal(false);
+      });
+  };
+
+  const handleEditProduct = (data: ProductFormDto) => {
+    if (selectedProduct) {
+      updateProduct({ ...data, id: selectedProduct.id })
+        .unwrap()
+        .then(() => {
+          setShowCreateModal(false);
         });
     }
   };
@@ -113,7 +148,10 @@ const Product = () => {
           subtitle="Here are listed all the products that are registered in the system."
           hasButton={true}
           buttonLabel="Create Product"
-          onClick={handleShowCreate}
+          onClick={() => {
+            setSelectedProduct(null);
+            setShowCreateModal(true);
+          }}
         />
       </motion.div>
       <motion.div {...motionProps}>
@@ -137,6 +175,17 @@ const Product = () => {
           isLoading={isLoading}
         />
       </motion.div>
+      <Modal open={showCreateModal} hasActionButtons={false}>
+        <ProductForm
+          isLoading={isCreateLoading || isUpdateLoading}
+          companies={companies ?? []}
+          categories={categories ?? []}
+          initialValues={(selectedProduct ?? {}) as ProductFormDto}
+          onSubmit={
+            selectedProduct !== null ? handleEditProduct : handleCreateProduct
+          }
+        />
+      </Modal>
       <Modal
         open={showDeleteModal}
         okButtonText="Delete"

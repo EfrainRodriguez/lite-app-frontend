@@ -169,7 +169,7 @@ const Company = () => {
       <Modal open={showCreateModal} hasActionButtons={false}>
         <CompanyForm
           isLoading={isCreateLoading || isUpdateLoading}
-          initialValues={(selectedCompany ?? {}) as CompanyModel}
+          initialValues={(selectedCompany ?? {}) as CompanyFormDto}
           onSubmit={
             selectedCompany !== null ? handleEditCompany : handleCreateCompany
           }

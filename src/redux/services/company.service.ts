@@ -1,6 +1,5 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 
-import { Company } from '../../models/company.model';
 import { customBaseQuery } from '../utils/customBaseQuery';
 
 const api = createApi({
