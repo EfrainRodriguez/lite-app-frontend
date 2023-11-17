@@ -1,0 +1,5 @@
+export enum LAYOUT {
+  DRAWER_WIDTH = 250,
+  APPBAR_MOBILE = 66,
+  APPBAR_DESKTOP = 63
+}
