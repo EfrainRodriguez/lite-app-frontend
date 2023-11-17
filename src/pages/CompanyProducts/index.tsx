@@ -260,7 +260,7 @@ const Product = () => {
                 margin: '10px 40px 0px'
               }}
             >
-              <Text>{company.name}</Text>
+              <Text>{company?.name}</Text>
             </View>
             {sourceData.map((item) => (
               <View
