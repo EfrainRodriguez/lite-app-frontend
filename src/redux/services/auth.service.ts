@@ -5,6 +5,7 @@ const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_APP_URL_API}`
   }),
+  tagTypes: ['Auth'],
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (body) => ({
@@ -14,11 +15,19 @@ const api = createApi({
       }),
       transformResponse: (response: { access: string }) => {
         return { accessToken: response.access };
-      }
+      },
+      invalidatesTags: ['Auth']
+    }),
+    getAccount: builder.query({
+      query: (id) => ({
+        url: `/accounts/${id}`,
+        method: 'GET'
+      }),
+      providesTags: ['Auth']
     })
   })
 });
 
-export const { useLoginMutation } = api;
+export const { useLoginMutation, useGetAccountQuery } = api;
 
 export default api;

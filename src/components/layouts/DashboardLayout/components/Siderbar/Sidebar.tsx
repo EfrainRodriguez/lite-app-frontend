@@ -15,9 +15,9 @@ import {
 import { useCustomSelector } from '@/redux/store';
 import ScrollBar from '@/components/ScrollBar';
 
+import { useGetAccountQuery } from '@/redux/services/auth.service';
 import MenuLinks, { type SideConfigProps } from './utils/SidebarConfig';
 import SidebarItem from './components/SidebarItem';
-
 // ----------------------------------------------------------------------
 
 const DRAWER_WIDTH = 280;
@@ -123,6 +123,10 @@ const DashboardSidebar = ({
 }: DashboardSidebarProps) => {
   const { user } = useCustomSelector((state) => state.auth);
 
+  const { data } = useGetAccountQuery(user?.id, {
+    skip: !user?.id
+  });
+
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -137,7 +141,12 @@ const DashboardSidebar = ({
       <AccountStyle>
         <Avatar src={''} alt="user avatar" />
         <Box sx={{ ml: 2 }}>
-          <Typography variant="body1">{(user as any)?.firstName}</Typography>
+          <Typography variant="body1">{`${(data as any)?.first_name} ${(
+            data as any
+          )?.last_name}`}</Typography>
+          <Typography variant="caption">
+            {(data as any)?.is_staff ? 'Admin' : 'User'}
+          </Typography>
         </Box>
       </AccountStyle>
 

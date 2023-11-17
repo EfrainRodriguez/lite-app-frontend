@@ -6,7 +6,7 @@ import {
   BrightnessHigh,
   PowerSettingsNew
 } from '@mui/icons-material';
-import { alpha, experimentalStyled as styled } from '@mui/material/styles';
+import { experimentalStyled as styled } from '@mui/material/styles';
 
 import { logout } from '@/redux/slices/auth.slice';
 import { setThemeMode } from '@/redux/slices/settings.slice';
@@ -37,7 +37,8 @@ const RootStyle = styled(AppBar)(({ theme }) => ({
   boxShadow: 'none',
   backdropFilter: 'blur(6px)',
   WebkitBackdropFilter: 'blur(6px)',
-  backgroundColor: alpha(theme.palette.background.default, 0.5),
+  backgroundColor: theme.palette.background.paper,
+  borderBottom: `solid 1px ${theme.palette.divider}`,
   [theme.breakpoints.up('lg')]: {
     width: `calc(100% - ${LAYOUT.DRAWER_WIDTH}px)`
   }

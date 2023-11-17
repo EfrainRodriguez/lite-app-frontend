@@ -23,7 +23,7 @@ const MainStyle = styled('div')(({ theme }) => ({
   paddingTop: LAYOUT.APPBAR_MOBILE + 16,
   paddingBottom: theme.spacing(10),
   [theme.breakpoints.up('lg')]: {
-    paddingTop: LAYOUT.APPBAR_DESKTOP + 8,
+    paddingTop: LAYOUT.APPBAR_DESKTOP + 16,
     paddingLeft: theme.spacing(0),
     paddingRight: theme.spacing(0)
   }

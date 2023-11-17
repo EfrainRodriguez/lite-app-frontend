@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { jwtDecode } from 'jwt-decode';
 
 interface UserModel {
   id: string;
@@ -22,6 +23,14 @@ const authSlice = createSlice({
   reducers: {
     setAccessToken: (state, action: PayloadAction<string | null>) => {
       state.accessToken = action.payload;
+      if (action.payload) {
+        const user = jwtDecode(action.payload) as any;
+        state.user = {
+          id: user.user_id,
+          name: '',
+          email: ''
+        };
+      }
     },
     setLoggedUser: (state, action: PayloadAction<UserModel | null>) => {
       state.user = action.payload;
