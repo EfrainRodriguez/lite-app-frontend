@@ -7,7 +7,7 @@ const Page404 = () => (
   <Container>
     <Box sx={{ maxWidth: 480, margin: 'auto', textAlign: 'center' }}>
       <Typography sx={{ color: 'text.secondary' }} mt={5} variant="h4">
-        Ups! Parece que te perdiste
+        Ups! Page not found
       </Typography>
 
       <Box
@@ -18,7 +18,7 @@ const Page404 = () => (
       />
 
       <Button to="/" variant="contained" component={RouterLink}>
-        Ir a la página inicial
+        Go to Home
       </Button>
     </Box>
   </Container>

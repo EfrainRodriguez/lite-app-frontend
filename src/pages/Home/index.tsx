@@ -1,5 +1,7 @@
+import { Navigate } from 'react-router-dom';
+
 const Home = () => {
-  return <div>Home</div>;
+  return <Navigate to="/companies" />;
 };
 
 export default Home;

@@ -1,12 +1,16 @@
 import { ReactNode } from 'react';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 
+import useSettings from '@/hooks/useSettings';
+
 interface ThemeConfigProps {
   children: ReactNode;
 }
 
 const ThemeConfig = ({ children }: ThemeConfigProps) => {
-  const mode: 'light' | 'dark' = 'light';
+  const { themeMode } = useSettings();
+
+  const isLight = themeMode === 'light';
 
   const theme = createTheme({
     palette: {
@@ -21,9 +25,9 @@ const ThemeConfig = ({ children }: ThemeConfigProps) => {
         dark: '#B62B39'
       },
       background: {
-        default: mode === 'light' ? '#F5F5F5' : '#121212'
+        default: isLight ? '#F5F5F5' : '#121212'
       },
-      mode
+      mode: themeMode
     },
     typography: {
       fontFamily: 'Lexend, sans-serif'

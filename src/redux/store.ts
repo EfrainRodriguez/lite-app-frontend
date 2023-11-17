@@ -16,6 +16,8 @@ import settingsSlice from './slices/settings.slice';
 import authSlice from './slices/auth.slice';
 
 import authService from './services/auth.service';
+import productService from './services/product.service';
+import companyService from './services/company.service';
 
 const persistAuthConfig = {
   key: 'auth',
@@ -32,7 +34,9 @@ const persistSettingsConfig = {
 const rootReducer = combineReducers({
   settings: persistReducer(persistSettingsConfig, settingsSlice),
   auth: persistReducer(persistAuthConfig, authSlice),
-  [authService.reducerPath]: authService.reducer
+  [authService.reducerPath]: authService.reducer,
+  [productService.reducerPath]: productService.reducer,
+  [companyService.reducerPath]: companyService.reducer
 });
 
 const store = configureStore({
@@ -40,7 +44,10 @@ const store = configureStore({
   middleware: (defaultMiddleware) =>
     defaultMiddleware({
       serializableCheck: false
-    }).concat(authService.middleware)
+    })
+      .concat(authService.middleware)
+      .concat(productService.middleware)
+      .concat(companyService.middleware)
 });
 
 // types

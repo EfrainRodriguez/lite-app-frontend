@@ -35,13 +35,18 @@ export const ICONS = {
 const sidebarConfig: SideConfigProps[] = [
   {
     items: [
+      // {
+      //   title: 'Home',
+      //   icon: ICONS.home,
+      //   href: '/'
+      // },
       {
-        title: 'Home',
-        icon: ICONS.home,
-        href: '/'
+        title: 'Companies',
+        icon: ICONS.company,
+        href: '/companies'
       },
       {
-        title: 'Productos',
+        title: 'Products',
         icon: ICONS.product,
         href: '/products'
       }

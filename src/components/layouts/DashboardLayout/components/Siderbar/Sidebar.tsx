@@ -37,9 +37,9 @@ const AccountStyle = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(2, 2.5),
-  margin: theme.spacing(1, 2.5, 2),
+  margin: theme.spacing(3, 2.5, 4),
   borderRadius: theme.shape.borderRadius * 2,
-  backgroundColor: theme.palette.grey[200]
+  border: `solid 1px ${theme.palette.grey[300]}`
 }));
 
 // ----------------------------------------------------------------------
