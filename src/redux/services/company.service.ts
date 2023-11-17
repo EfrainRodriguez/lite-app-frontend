@@ -38,9 +38,21 @@ const api = createApi({
     }),
     updateCompany: builder.mutation({
       query: (body) => ({
-        url: '/companies/',
+        url: `/companies/${body.id}/`,
         method: 'PUT',
-        body
+        body: {
+          name: body.name,
+          nit: body.nit,
+          address: body.address,
+          phone: body.phone
+        }
+      }),
+      invalidatesTags: ['Company']
+    }),
+    deleteCompany: builder.mutation({
+      query: (id) => ({
+        url: `/companies/${id}`,
+        method: 'DELETE'
       }),
       invalidatesTags: ['Company']
     })
@@ -51,7 +63,8 @@ export const {
   useGetCompanyQuery,
   useGetCompaniesQuery,
   useCreateCompanyMutation,
-  useUpdateCompanyMutation
+  useUpdateCompanyMutation,
+  useDeleteCompanyMutation
 } = api;
 
 export default api;

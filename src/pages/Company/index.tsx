@@ -1,13 +1,22 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { IconButton, Tooltip } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 
+import Modal from '@/components/Modal';
 import PageHeader from '@/components/PageHeader';
 import Table from '@/components/Table';
 import { Company as CompanyModel } from '@/models/company.model';
-import { useGetCompaniesQuery } from '@/redux/services/company.service';
+import {
+  useGetCompaniesQuery,
+  useDeleteCompanyMutation,
+  useCreateCompanyMutation,
+  useUpdateCompanyMutation
+} from '@/redux/services/company.service';
 
 import CompanyMobileContent from './components/CompanyMobileContent';
+import CompanyForm from './components/CompanyForm';
+import { CompanyFormDto } from './components/CompanyForm/dtos/companyFormDto';
 
 const motionProps = {
   initial: { opacity: 0 },
@@ -16,7 +25,18 @@ const motionProps = {
 };
 
 const Company = () => {
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState<CompanyModel | null>(
+    null
+  );
+
   const { data, isLoading } = useGetCompaniesQuery('');
+  const [deleteCompany, { isLoading: isDeleting }] = useDeleteCompanyMutation();
+  const [createCompany, { isLoading: isCreateLoading }] =
+    useCreateCompanyMutation();
+  const [updateCompany, { isLoading: isUpdateLoading }] =
+    useUpdateCompanyMutation();
 
   const cellSchema = [
     {
@@ -50,12 +70,15 @@ const Company = () => {
         align: 'right' as any,
         width: '20%'
       },
-      render: (value: any, item: CompanyModel) => (
+      render: (_value: any, item: CompanyModel) => (
         <>
           <Tooltip title="Edit" arrow>
             <IconButton
               aria-label="edit"
-              onClick={() => {}}
+              onClick={() => {
+                setSelectedCompany(item);
+                setShowCreateModal(true);
+              }}
               size="large"
               sx={{ mr: 1 }}
             >
@@ -65,7 +88,10 @@ const Company = () => {
           <Tooltip title="Delete" arrow>
             <IconButton
               aria-label="delete"
-              onClick={() => {}}
+              onClick={() => {
+                setSelectedCompany(item);
+                setShowDeleteModal(true);
+              }}
               size="large"
               sx={{ mr: 1 }}
             >
@@ -77,7 +103,33 @@ const Company = () => {
     }
   ];
 
-  const handleShowCreate = () => {};
+  const handleDeleteCompany = () => {
+    if (selectedCompany) {
+      deleteCompany(selectedCompany.id)
+        .unwrap()
+        .then(() => {
+          setShowDeleteModal(false);
+        });
+    }
+  };
+
+  const handleCreateCompany = (data: CompanyFormDto) => {
+    createCompany(data)
+      .unwrap()
+      .then(() => {
+        setShowCreateModal(false);
+      });
+  };
+
+  const handleEditCompany = (data: CompanyFormDto) => {
+    if (selectedCompany) {
+      updateCompany({ ...data, id: selectedCompany.id })
+        .unwrap()
+        .then(() => {
+          setShowCreateModal(false);
+        });
+    }
+  };
 
   return (
     <>
@@ -87,7 +139,10 @@ const Company = () => {
           subtitle="Here are listed all the companies that are registered in the system."
           hasButton={true}
           buttonLabel="Create Company"
-          onClick={handleShowCreate}
+          onClick={() => {
+            setSelectedCompany(null);
+            setShowCreateModal(true);
+          }}
         />
       </motion.div>
       <motion.div {...motionProps}>
@@ -101,11 +156,35 @@ const Company = () => {
             <CompanyMobileContent
               data={item}
               onEdit={() => {}}
-              onDelete={() => {}}
+              onDelete={() => {
+                setSelectedCompany(item);
+                setShowDeleteModal(true);
+              }}
             />
           )}
+          hasPagination
+          isLoading={isLoading}
         />
       </motion.div>
+      <Modal open={showCreateModal} hasActionButtons={false}>
+        <CompanyForm
+          isLoading={isCreateLoading || isUpdateLoading}
+          initialValues={(selectedCompany ?? {}) as CompanyModel}
+          onSubmit={
+            selectedCompany !== null ? handleEditCompany : handleCreateCompany
+          }
+        />
+      </Modal>
+      <Modal
+        open={showDeleteModal}
+        okButtonText="Delete"
+        isLoading={isDeleting}
+        title="Are you sure you want to delete this company?"
+        onCancel={() => {
+          setShowDeleteModal(false);
+        }}
+        onOk={handleDeleteCompany}
+      />
     </>
   );
 };

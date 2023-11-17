@@ -49,6 +49,35 @@ const ThemeConfig = ({ children }: ThemeConfigProps) => {
             borderRadius: '500px'
           }
         }
+      },
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            // boxShadow: theme.customShadows.z16,
+            borderRadius: 16,
+            border: '1px solid rgba(145, 158, 171, 0.24)',
+            position: 'relative',
+            zIndex: 0 // Fix Safari overflow: hidden with border radius
+          }
+        }
+      },
+      MuiCardHeader: {
+        defaultProps: {
+          titleTypographyProps: { variant: 'h6' },
+          subheaderTypographyProps: { variant: 'body2' }
+        },
+        styleOverrides: {
+          root: {
+            padding: '24px 24px 0'
+          }
+        }
+      },
+      MuiCardContent: {
+        styleOverrides: {
+          root: {
+            padding: '24px 24px 0'
+          }
+        }
       }
     }
   });

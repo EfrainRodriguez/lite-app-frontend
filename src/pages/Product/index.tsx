@@ -1,11 +1,16 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { IconButton, Tooltip } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 
+import Modal from '@/components/Modal';
 import PageHeader from '@/components/PageHeader';
 import Table from '@/components/Table';
 import { Product as ProductModel } from '@/models/product.model';
-import { useGetProductsQuery } from '@/redux/services/product.service';
+import {
+  useGetProductsQuery,
+  useDeleteProductMutation
+} from '@/redux/services/product.service';
 
 import ProductMobileContent from './components/ProductMobileContent';
 
@@ -16,7 +21,14 @@ const motionProps = {
 };
 
 const Product = () => {
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductModel | null>(
+    null
+  );
+
   const { data, isLoading } = useGetProductsQuery('');
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
 
   const cellSchema = [
     {
@@ -51,7 +63,7 @@ const Product = () => {
         align: 'right' as any,
         width: '20%'
       },
-      render: (value: any, item: ProductModel) => (
+      render: (_value: any, item: ProductModel) => (
         <>
           <Tooltip title="Edit" arrow>
             <IconButton
@@ -66,7 +78,10 @@ const Product = () => {
           <Tooltip title="Delete" arrow>
             <IconButton
               aria-label="delete"
-              onClick={() => {}}
+              onClick={() => {
+                setSelectedProduct(item);
+                setShowDeleteModal(true);
+              }}
               size="large"
               sx={{ mr: 1 }}
             >
@@ -79,6 +94,16 @@ const Product = () => {
   ];
 
   const handleShowCreate = () => {};
+
+  const handleDeleteProduct = () => {
+    if (selectedProduct) {
+      deleteProduct(selectedProduct.id)
+        .unwrap()
+        .then(() => {
+          setShowDeleteModal(false);
+        });
+    }
+  };
 
   return (
     <>
@@ -102,11 +127,26 @@ const Product = () => {
             <ProductMobileContent
               data={item}
               onEdit={() => {}}
-              onDelete={() => {}}
+              onDelete={() => {
+                setSelectedProduct(item);
+                setShowDeleteModal(true);
+              }}
             />
           )}
+          hasPagination
+          isLoading={isLoading}
         />
       </motion.div>
+      <Modal
+        open={showDeleteModal}
+        okButtonText="Delete"
+        isLoading={isDeleting}
+        title="Are you sure you want to delete this company?"
+        onCancel={() => {
+          setShowDeleteModal(false);
+        }}
+        onOk={handleDeleteProduct}
+      />
     </>
   );
 };

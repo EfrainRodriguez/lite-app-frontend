@@ -42,6 +42,13 @@ const api = createApi({
         body
       }),
       invalidatesTags: ['Product']
+    }),
+    deleteProduct: builder.mutation({
+      query: (id) => ({
+        url: `/products/${id}`,
+        method: 'DELETE'
+      }),
+      invalidatesTags: ['Product']
     })
   })
 });
@@ -50,7 +57,8 @@ export const {
   useGetProductQuery,
   useGetProductsQuery,
   useCreateProductMutation,
-  useUpdateProductMutation
+  useUpdateProductMutation,
+  useDeleteProductMutation
 } = api;
 
 export default api;
