@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { IconButton, Tooltip } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
+import { Delete, Edit, ProductionQuantityLimits } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 import Modal from '@/components/Modal';
 import PageHeader from '@/components/PageHeader';
@@ -33,6 +34,7 @@ const Company = () => {
   );
 
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
 
   const { data, isLoading } = useGetCompaniesQuery('');
   const [deleteCompany, { isLoading: isDeleting }] = useDeleteCompanyMutation();
@@ -75,6 +77,18 @@ const Company = () => {
       },
       render: (_value: any, item: CompanyModel) => (
         <>
+          <Tooltip title="Products" arrow>
+            <IconButton
+              aria-label="products"
+              onClick={() => {
+                navigate(`/companies/${item.id}`);
+              }}
+              size="large"
+              sx={{ mr: 1 }}
+            >
+              <ProductionQuantityLimits fontSize="inherit" />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Edit" arrow>
             <IconButton
               aria-label="edit"
@@ -197,7 +211,11 @@ const Company = () => {
           isLoading={isLoading}
         />
       </motion.div>
-      <Modal open={showCreateModal} hasActionButtons={false}>
+      <Modal
+        open={showCreateModal}
+        hasActionButtons={false}
+        onClose={() => setShowCreateModal(false)}
+      >
         <CompanyForm
           isLoading={isCreateLoading || isUpdateLoading}
           initialValues={(selectedCompany ?? {}) as CompanyFormDto}
@@ -214,6 +232,7 @@ const Company = () => {
         onCancel={() => {
           setShowDeleteModal(false);
         }}
+        onClose={() => setShowDeleteModal(false)}
         onOk={handleDeleteCompany}
       />
     </>

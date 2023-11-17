@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { IconButton, Tooltip } from '@mui/material';
-import { Delete, Edit } from '@mui/icons-material';
+import { Button, IconButton, Tooltip } from '@mui/material';
+import { ArrowBack, Delete, Edit } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
+import { useParams, useNavigate } from 'react-router-dom';
+import { PDFViewer, Document, Page, View, Text } from '@react-pdf/renderer';
 
 import Modal from '@/components/Modal';
 import PageHeader from '@/components/PageHeader';
@@ -14,7 +16,10 @@ import {
   useCreateProductMutation,
   useUpdateProductMutation
 } from '@/redux/services/product.service';
-import { useGetCompaniesQuery } from '@/redux/services/company.service';
+import {
+  useGetCompaniesQuery,
+  useGetCompanyQuery
+} from '@/redux/services/company.service';
 import { useGetCategoriesQuery } from '@/redux/services/category.service';
 
 import ProductMobileContent from './components/ProductMobileContent';
@@ -35,6 +40,8 @@ const Product = () => {
   );
 
   const { enqueueSnackbar } = useSnackbar();
+  const { id } = useParams();
+  const navigate = useNavigate();
 
   const { data, isLoading } = useGetProductsQuery('');
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
@@ -44,6 +51,9 @@ const Product = () => {
     useUpdateProductMutation();
   const { data: companies } = useGetCompaniesQuery('');
   const { data: categories } = useGetCategoriesQuery('');
+  const { data: company } = useGetCompanyQuery(id, {
+    skip: !id
+  });
 
   const cellSchema = [
     {
@@ -167,27 +177,33 @@ const Product = () => {
     }
   };
 
+  const sourceData = (data || [])
+    .map((item, index) => ({
+      ...item,
+      tableIndex: index
+    }))
+    .filter((item) => item.company == id);
+
   return (
     <>
       <motion.div {...motionProps}>
+        <Button
+          variant="outlined"
+          onClick={() => navigate('/companies')}
+          sx={{ mb: 1 }}
+        >
+          <ArrowBack fontSize="small" sx={{ mr: 1 }} />
+          Volver
+        </Button>
         <PageHeader
-          title="Product"
+          title={`Products of the company: ${company?.name}`}
           subtitle="Here are listed all the products that are registered in the system."
-          hasButton={true}
-          buttonLabel="Create Product"
-          onClick={() => {
-            setSelectedProduct(null);
-            setShowCreateModal(true);
-          }}
         />
       </motion.div>
       <motion.div {...motionProps}>
         <Table
           cellSchema={cellSchema}
-          sourceData={(data || []).map((item, index) => ({
-            ...item,
-            tableIndex: index
-          }))}
+          sourceData={sourceData}
           renderMobileContent={(item) => (
             <ProductMobileContent
               data={item}
@@ -228,6 +244,60 @@ const Product = () => {
         onClose={() => setShowDeleteModal(false)}
         onOk={handleDeleteProduct}
       />
+      <PDFViewer
+        style={{
+          width: '100%',
+          height: '100%',
+          minHeight: '100vh',
+          border: 'none',
+          marginTop: '40px'
+        }}
+      >
+        <Document title="products.pdf">
+          <Page size="A4">
+            <View
+              style={{
+                margin: '10px 40px 0px'
+              }}
+            >
+              <Text>{company.name}</Text>
+            </View>
+            {sourceData.map((item) => (
+              <View
+                key={item.id}
+                style={{
+                  margin: '10px 40px',
+                  border: '1px solid black',
+                  padding: '10px'
+                }}
+              >
+                <Text>{item.name}</Text>
+                <Text
+                  style={{
+                    fontSize: '12px'
+                  }}
+                >
+                  {item.code}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: '12px'
+                  }}
+                >
+                  {item.characteristics}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: '12px'
+                  }}
+                >
+                  {item.price}
+                </Text>
+              </View>
+            ))}
+          </Page>
+        </Document>
+      </PDFViewer>
     </>
   );
 };
