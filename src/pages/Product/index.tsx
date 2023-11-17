@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { IconButton, Tooltip } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
+import { useSnackbar } from 'notistack';
 
 import Modal from '@/components/Modal';
 import PageHeader from '@/components/PageHeader';
 import Table from '@/components/Table';
-import { Category, Product as ProductModel } from '@/models/product.model';
+import { Product as ProductModel } from '@/models/product.model';
 import {
   useGetProductsQuery,
   useDeleteProductMutation,
@@ -32,6 +33,8 @@ const Product = () => {
   const [selectedProduct, setSelectedProduct] = useState<ProductModel | null>(
     null
   );
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data, isLoading } = useGetProductsQuery('');
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
@@ -118,6 +121,14 @@ const Product = () => {
         .unwrap()
         .then(() => {
           setShowDeleteModal(false);
+          enqueueSnackbar('Product deleted successfully', {
+            variant: 'success'
+          });
+        })
+        .catch(() => {
+          enqueueSnackbar('Error deleting product', {
+            variant: 'error'
+          });
         });
     }
   };
@@ -127,6 +138,14 @@ const Product = () => {
       .unwrap()
       .then(() => {
         setShowCreateModal(false);
+        enqueueSnackbar('Product created successfully', {
+          variant: 'success'
+        });
+      })
+      .catch(() => {
+        enqueueSnackbar('Error creating product', {
+          variant: 'error'
+        });
       });
   };
 
@@ -136,6 +155,14 @@ const Product = () => {
         .unwrap()
         .then(() => {
           setShowCreateModal(false);
+          enqueueSnackbar('Product updated successfully', {
+            variant: 'success'
+          });
+        })
+        .catch(() => {
+          enqueueSnackbar('Error updating product', {
+            variant: 'error'
+          });
         });
     }
   };

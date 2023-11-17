@@ -17,6 +17,7 @@ import {
 import CompanyMobileContent from './components/CompanyMobileContent';
 import CompanyForm from './components/CompanyForm';
 import { CompanyFormDto } from './components/CompanyForm/dtos/companyFormDto';
+import { useSnackbar } from 'notistack';
 
 const motionProps = {
   initial: { opacity: 0 },
@@ -30,6 +31,8 @@ const Company = () => {
   const [selectedCompany, setSelectedCompany] = useState<CompanyModel | null>(
     null
   );
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data, isLoading } = useGetCompaniesQuery('');
   const [deleteCompany, { isLoading: isDeleting }] = useDeleteCompanyMutation();
@@ -109,6 +112,17 @@ const Company = () => {
         .unwrap()
         .then(() => {
           setShowDeleteModal(false);
+          enqueueSnackbar('Company deleted successfully', {
+            variant: 'success'
+          });
+        })
+        .catch(() => {
+          enqueueSnackbar(
+            'Company has products associated, please delete them first',
+            {
+              variant: 'error'
+            }
+          );
         });
     }
   };
@@ -118,6 +132,15 @@ const Company = () => {
       .unwrap()
       .then(() => {
         setShowCreateModal(false);
+
+        enqueueSnackbar('Company created successfully', {
+          variant: 'success'
+        });
+      })
+      .catch(() => {
+        enqueueSnackbar('Error creating company', {
+          variant: 'error'
+        });
       });
   };
 
@@ -127,6 +150,14 @@ const Company = () => {
         .unwrap()
         .then(() => {
           setShowCreateModal(false);
+          enqueueSnackbar('Company updated successfully', {
+            variant: 'success'
+          });
+        })
+        .catch(() => {
+          enqueueSnackbar('Error updating company', {
+            variant: 'error'
+          });
         });
     }
   };
