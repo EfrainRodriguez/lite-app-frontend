@@ -228,11 +228,6 @@ const Product = () => {
           hasPagination
           isLoading={isLoading}
         />
-        <Box display="flex" justifyContent="end">
-          <Button variant="outlined" onClick={() => {}} sx={{ mt: 4 }}>
-            Send pdf by email
-          </Button>
-        </Box>
       </motion.div>
       <Modal
         open={showCreateModal}
@@ -260,60 +255,69 @@ const Product = () => {
         onClose={() => setShowDeleteModal(false)}
         onOk={handleDeleteProduct}
       />
-      <PDFViewer
-        style={{
-          width: '100%',
-          height: '100%',
-          minHeight: '100vh',
-          border: 'none',
-          marginTop: '32px'
-        }}
-      >
-        <Document title="products.pdf">
-          <Page size="A4">
-            <View
-              style={{
-                margin: '10px 40px 0px'
-              }}
-            >
-              <Text>{company?.name}</Text>
-            </View>
-            {sourceData.map((item) => (
-              <View
-                key={item.id}
-                style={{
-                  margin: '10px 40px',
-                  border: '1px solid black',
-                  padding: '10px'
-                }}
-              >
-                <Text>{item.name}</Text>
-                <Text
+      {sourceData.length > 0 && (
+        <>
+          <Box display="flex" justifyContent="end">
+            <Button variant="outlined" onClick={() => {}} sx={{ mt: 4 }}>
+              Send pdf by email
+            </Button>
+          </Box>
+          <PDFViewer
+            style={{
+              width: '100%',
+              height: '100%',
+              minHeight: '100vh',
+              border: 'none',
+              marginTop: '32px'
+            }}
+          >
+            <Document title="products.pdf">
+              <Page size="A4">
+                <View
                   style={{
-                    fontSize: '12px'
+                    margin: '10px 40px 0px'
                   }}
                 >
-                  {item.code}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: '12px'
-                  }}
-                >
-                  {item.characteristics}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: '12px'
-                  }}
-                >
-                  {item.price}
-                </Text>
-              </View>
-            ))}
-          </Page>
-        </Document>
-      </PDFViewer>
+                  <Text>{company?.name}</Text>
+                </View>
+                {sourceData.map((item) => (
+                  <View
+                    key={item.id}
+                    style={{
+                      margin: '10px 40px',
+                      border: '1px solid black',
+                      padding: '10px'
+                    }}
+                  >
+                    <Text>{item.name}</Text>
+                    <Text
+                      style={{
+                        fontSize: '12px'
+                      }}
+                    >
+                      {item.code}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: '12px'
+                      }}
+                    >
+                      {item.characteristics}
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: '12px'
+                      }}
+                    >
+                      {item.price}
+                    </Text>
+                  </View>
+                ))}
+              </Page>
+            </Document>
+          </PDFViewer>
+        </>
+      )}
     </>
   );
 };

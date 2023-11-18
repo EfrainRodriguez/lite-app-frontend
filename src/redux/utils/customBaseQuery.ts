@@ -9,8 +9,7 @@ import { logout } from '../slices/auth.slice';
 import type { RootState } from '../store';
 
 export const baseQuery = fetchBaseQuery({
-  baseUrl: `https://lite-app-api.onrender.com/api/v1
-  `,
+  baseUrl: `https://lite-app-api.onrender.com/api/v1`,
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
     const accessToken = state.auth.accessToken;
@@ -28,8 +27,9 @@ export const customBaseQuery: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  const adjustedUrl = `https://lite-app-api.onrender.com/api/v1
-  ${typeof args === 'string' ? args : args.url}`;
+  const adjustedUrl = `https://lite-app-api.onrender.com/api/v1${
+    typeof args === 'string' ? args : args.url
+  }`;
   const adjustedArgs =
     typeof args === 'string' ? adjustedUrl : { ...args, url: adjustedUrl };
 
