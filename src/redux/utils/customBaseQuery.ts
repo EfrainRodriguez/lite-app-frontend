@@ -9,7 +9,7 @@ import { logout } from '../slices/auth.slice';
 import type { RootState } from '../store';
 
 export const baseQuery = fetchBaseQuery({
-  baseUrl: `${import.meta.env.VITE_APP_URL_API_PHP}`,
+  baseUrl: `${import.meta.env.VITE_APP_URL_API}`,
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
     const accessToken = state.auth.accessToken;

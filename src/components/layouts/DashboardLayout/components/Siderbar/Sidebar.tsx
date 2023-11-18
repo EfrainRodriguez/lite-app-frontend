@@ -12,7 +12,8 @@ import {
   ListSubheader
 } from '@mui/material';
 
-import { useCustomSelector } from '@/redux/store';
+import { useCustomSelector, useCustomDispatch } from '@/redux/store';
+import { setLoggedUser } from '@/redux/slices/auth.slice';
 import ScrollBar from '@/components/ScrollBar';
 
 import { useGetAccountQuery } from '@/redux/services/auth.service';
@@ -123,9 +124,15 @@ const DashboardSidebar = ({
 }: DashboardSidebarProps) => {
   const { user } = useCustomSelector((state) => state.auth);
 
+  const dispatch = useCustomDispatch();
+
   const { data } = useGetAccountQuery(user?.id, {
     skip: !user?.id
   });
+
+  if (data !== undefined) {
+    dispatch(setLoggedUser(data));
+  }
 
   const { pathname } = useLocation();
 
@@ -141,7 +148,7 @@ const DashboardSidebar = ({
       <AccountStyle>
         <Avatar src={''} alt="user avatar" />
         <Box sx={{ ml: 2 }}>
-          <Typography variant="body1">{`${(data as any)?.first_name} ${(
+          <Typography variant="body1">{`${(user as any)?.first_name} ${(
             data as any
           )?.last_name}`}</Typography>
           <Typography variant="caption">

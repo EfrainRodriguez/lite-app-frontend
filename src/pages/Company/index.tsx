@@ -19,6 +19,7 @@ import CompanyMobileContent from './components/CompanyMobileContent';
 import CompanyForm from './components/CompanyForm';
 import { CompanyFormDto } from './components/CompanyForm/dtos/companyFormDto';
 import { useSnackbar } from 'notistack';
+import useIsAdmin from '@/hooks/useIsAdmin';
 
 const motionProps = {
   initial: { opacity: 0 },
@@ -32,6 +33,8 @@ const Company = () => {
   const [selectedCompany, setSelectedCompany] = useState<CompanyModel | null>(
     null
   );
+
+  const { isAdmin } = useIsAdmin();
 
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
@@ -96,6 +99,7 @@ const Company = () => {
                 setSelectedCompany(item);
                 setShowCreateModal(true);
               }}
+              disabled={!isAdmin}
               size="large"
               sx={{ mr: 1 }}
             >
@@ -109,6 +113,7 @@ const Company = () => {
                 setSelectedCompany(item);
                 setShowDeleteModal(true);
               }}
+              disabled={!isAdmin}
               size="large"
               sx={{ mr: 1 }}
             >
@@ -182,7 +187,7 @@ const Company = () => {
         <PageHeader
           title="Company"
           subtitle="Here are listed all the companies that are registered in the system."
-          hasButton={true}
+          hasButton={isAdmin}
           buttonLabel="Create Company"
           onClick={() => {
             setSelectedCompany(null);
@@ -200,10 +205,17 @@ const Company = () => {
           renderMobileContent={(item) => (
             <CompanyMobileContent
               data={item}
-              onEdit={() => {}}
+              onEdit={() => {
+                if (isAdmin) {
+                  setSelectedCompany(item);
+                  setShowCreateModal(true);
+                }
+              }}
               onDelete={() => {
-                setSelectedCompany(item);
-                setShowDeleteModal(true);
+                if (isAdmin) {
+                  setSelectedCompany(item);
+                  setShowDeleteModal(true);
+                }
               }}
             />
           )}

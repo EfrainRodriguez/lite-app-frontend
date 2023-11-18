@@ -20,6 +20,7 @@ import { useGetCategoriesQuery } from '@/redux/services/category.service';
 import ProductMobileContent from './components/ProductMobileContent';
 import ProductForm from './components/ProductForm';
 import { ProductFormDto } from './components/ProductForm/dtos/productFormDto';
+import useIsAdmin from '@/hooks/useIsAdmin';
 
 const motionProps = {
   initial: { opacity: 0 },
@@ -35,6 +36,8 @@ const Product = () => {
   );
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const { isAdmin } = useIsAdmin();
 
   const { data, isLoading } = useGetProductsQuery('');
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
@@ -91,6 +94,7 @@ const Product = () => {
                 });
                 setShowCreateModal(true);
               }}
+              disabled={!isAdmin}
               size="large"
               sx={{ mr: 1 }}
             >
@@ -104,6 +108,7 @@ const Product = () => {
                 setSelectedProduct(item);
                 setShowDeleteModal(true);
               }}
+              disabled={!isAdmin}
               size="large"
               sx={{ mr: 1 }}
             >
@@ -173,7 +178,7 @@ const Product = () => {
         <PageHeader
           title="Product"
           subtitle="Here are listed all the products that are registered in the system."
-          hasButton={true}
+          hasButton={isAdmin}
           buttonLabel="Create Product"
           onClick={() => {
             setSelectedProduct(null);
@@ -191,10 +196,17 @@ const Product = () => {
           renderMobileContent={(item) => (
             <ProductMobileContent
               data={item}
-              onEdit={() => {}}
+              onEdit={() => {
+                if (isAdmin) {
+                  setSelectedProduct(item);
+                  setShowCreateModal(true);
+                }
+              }}
               onDelete={() => {
-                setSelectedProduct(item);
-                setShowDeleteModal(true);
+                if (isAdmin) {
+                  setSelectedProduct(item);
+                  setShowDeleteModal(true);
+                }
               }}
             />
           )}

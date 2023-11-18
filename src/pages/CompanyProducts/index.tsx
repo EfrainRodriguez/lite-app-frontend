@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Button, IconButton, Tooltip } from '@mui/material';
+import { Button, IconButton, Tooltip, Box } from '@mui/material';
 import { ArrowBack, Delete, Edit } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -25,6 +25,7 @@ import { useGetCategoriesQuery } from '@/redux/services/category.service';
 import ProductMobileContent from './components/ProductMobileContent';
 import ProductForm from './components/ProductForm';
 import { ProductFormDto } from './components/ProductForm/dtos/productFormDto';
+import useIsAdmin from '@/hooks/useIsAdmin';
 
 const motionProps = {
   initial: { opacity: 0 },
@@ -42,6 +43,7 @@ const Product = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { id } = useParams();
   const navigate = useNavigate();
+  const { isAdmin } = useIsAdmin();
 
   const { data, isLoading } = useGetProductsQuery('');
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
@@ -101,6 +103,7 @@ const Product = () => {
                 });
                 setShowCreateModal(true);
               }}
+              disabled={!isAdmin}
               size="large"
               sx={{ mr: 1 }}
             >
@@ -114,6 +117,7 @@ const Product = () => {
                 setSelectedProduct(item);
                 setShowDeleteModal(true);
               }}
+              disabled={!isAdmin}
               size="large"
               sx={{ mr: 1 }}
             >
@@ -207,16 +211,28 @@ const Product = () => {
           renderMobileContent={(item) => (
             <ProductMobileContent
               data={item}
-              onEdit={() => {}}
+              onEdit={() => {
+                if (isAdmin) {
+                  setSelectedProduct(item);
+                  setShowCreateModal(true);
+                }
+              }}
               onDelete={() => {
-                setSelectedProduct(item);
-                setShowDeleteModal(true);
+                if (isAdmin) {
+                  setSelectedProduct(item);
+                  setShowDeleteModal(true);
+                }
               }}
             />
           )}
           hasPagination
           isLoading={isLoading}
         />
+        <Box display="flex" justifyContent="end">
+          <Button variant="outlined" onClick={() => {}} sx={{ mt: 4 }}>
+            Send pdf by email
+          </Button>
+        </Box>
       </motion.div>
       <Modal
         open={showCreateModal}
@@ -250,7 +266,7 @@ const Product = () => {
           height: '100%',
           minHeight: '100vh',
           border: 'none',
-          marginTop: '40px'
+          marginTop: '32px'
         }}
       >
         <Document title="products.pdf">

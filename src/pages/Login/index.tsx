@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Container } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 import { useCustomDispatch, useCustomSelector } from '@/redux/store';
 import { useLoginMutation } from '@/redux/services/auth.service';
@@ -20,15 +21,17 @@ const Login = () => {
 
   const dispatch = useCustomDispatch();
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleSubmit = (values: LoginFormDto) => {
-    login(values)
+    login({ ...values })
       .unwrap()
       .then((response) => {
         dispatch(setAccessToken(response.accessToken));
+        enqueueSnackbar('Login successful!', { variant: 'success' });
       })
       .catch(() => {
-        // ...
+        enqueueSnackbar('Login failed!', { variant: 'error' });
       });
   };
 
